@@ -2,122 +2,125 @@ package org.example;
 
 public class TennisScorebord {
 
-    private String sp1;
-    private String sp2;
-    private int setSp1;
-    private int setSp2;
-    private int gameSp1;
-    private int gameSp2;
-    private int TbSp1;
-    private int TbSp2;
-    private String spelSp1;
-    private String spelSp2;
+    private String player1;
+    private String player2;
+    private int wonSetPlayer1;
+    private int wonSetPlayer2;
+    private int wonGamePlayer1;
+    private int wonGamePlayer2;
+    private int tiebreakPlayer1;
+    private int tiebreakPlayer2;
+    private String currentGamePlayer1;
+    private String currentGamePlayer2;
     private String setStand;
 
     /**
      * Constructor voor objects van class Scorebord
      */
-    public TennisScorebord(String speler1, String speler2)
+    public TennisScorebord(String player1, String player2)
     {
-        sp1 = speler1;
-        sp2 = speler2;
-        spelSp1="0";
-        spelSp2="0";
+        this.player1 = player1;
+        this.player2 = player2;
+        currentGamePlayer1 ="0";
+        currentGamePlayer2 ="0";
         setStand="0-0";
-
     }
 
-    public void puntToevoegen(String naamSpeler)
+    public void addPoint(String naamSpeler)
     {
         //controle op Tiebreak
-        if(gameSp1==6&&gameSp2==6){
-            if(naamSpeler.equals(sp1)){
-                if(TbSp1>=6&&(TbSp2<=(TbSp1-2))){   //indien 2 punten verschil
-                    setSp1++; //setwinst
-                    spelSp1="0"; //reset van de spellen
-                    spelSp2="0";
-                    gameSp1=0;
-                    gameSp2=0;
-                    TbSp1=0;
-                    TbSp2=0;
+        if(wonGamePlayer1 ==6&& wonGamePlayer2 ==6){
+            if(naamSpeler.equals(player1)){
+                if(tiebreakPlayer1 >=6&&(tiebreakPlayer2 <=(tiebreakPlayer1 -2))){   //indien 2 punten verschil
+                    wonSetPlayer1++; //setwinst
+                    currentGamePlayer1 ="0"; //reset van de spellen
+                    currentGamePlayer2 ="0";
+                    wonGamePlayer1 =0;
+                    wonGamePlayer2 =0;
+                    tiebreakPlayer1 =0;
+                    tiebreakPlayer2 =0;
                 }else{
-                    TbSp1++;                        //anders TBpunt+1
+                    tiebreakPlayer1++;                        //anders TBpunt+1
                 }
-            }else if(TbSp2>=6&&(TbSp1<=(TbSp2-1))){
-                setSp2++;    //setwinst
-                spelSp1="0"; //reset van de spellen
-                spelSp2="0";
-                gameSp1=0;
-                gameSp2=0;
-                TbSp1=0;
-                TbSp2=0;
+            }else if(tiebreakPlayer2 >=6&&(tiebreakPlayer1 <=(tiebreakPlayer2 -1))){
+                wonSetPlayer2++;    //setwinst
+                currentGamePlayer1 ="0"; //reset van de spellen
+                currentGamePlayer2 ="0";
+                wonGamePlayer1 =0;
+                wonGamePlayer2 =0;
+                tiebreakPlayer1 =0;
+                tiebreakPlayer2 =0;
             }else{
-                TbSp2++;
+                tiebreakPlayer2++;
             }
 
             //puntentelling bij spelletje - gebruik van string om "advantage" te verwerken
             //speler1
-        }else if(naamSpeler.equals(sp1)){
-            if(spelSp1.equals("0")){spelSp1="15";
-            }else if(spelSp1.equals("15")){
-                spelSp1="30";
-            }else if(spelSp1.equals("30")){
-                spelSp1="40";
-            }else if(spelSp1.equals("adv")){
-                gameSp1++;
-                spelSp1="0"; //reset van de spellen
-                spelSp2="0";
-            }else if(spelSp2.equals("40")){
-                spelSp1="adv"; //deuce!! : punt speler 1
-            }else if(spelSp2.equals("adv")){
-                spelSp2="40"; //deuce!! : speler 1 neemt voordeel weg van speler 1 (opnieuw Deuce)
-            }else if(spelSp1.equals("40")){
-                gameSp1++;
-                spelSp1="0";
-                spelSp2="0";
+        }else if(naamSpeler.equals(player1)){
+            if(currentGamePlayer1.equals("0")){
+                currentGamePlayer1 ="15";
+            }else if(currentGamePlayer1.equals("15")){
+                currentGamePlayer1 ="30";
+            }else if(currentGamePlayer1.equals("30")){
+                currentGamePlayer1 ="40";
+            }else if(currentGamePlayer1.equals("adv")){
+                wonGamePlayer1++;
+                currentGamePlayer1 ="0"; //reset van de spellen
+                currentGamePlayer2 ="0";
+            }else if(currentGamePlayer2.equals("40")){
+                currentGamePlayer1 ="adv"; //deuce!! : punt speler 1
+            }else if(currentGamePlayer2.equals("adv")){
+                currentGamePlayer2 ="40"; //deuce!! : speler 1 neemt voordeel weg van speler 1 (opnieuw Deuce)
+            }else if(currentGamePlayer1.equals("40")){
+                wonGamePlayer1++;
+                currentGamePlayer1 ="0";
+                currentGamePlayer2 ="0";
             }
             //speler2
-        }else if(spelSp2.equals("0")){
-            spelSp2="15";
-        }else if(spelSp2.equals("15")){
-            spelSp2="30";
-        }else if(spelSp2.equals("30")){
-            spelSp2="40";
-        }else if(spelSp2.equals("adv")){
-            gameSp2++;
-            spelSp1="0"; //reset van de spellen
-            spelSp2="0";
-        }else if(spelSp1.equals("40")){
-            spelSp2="adv"; //deuce!! : punt speler 2
-        }else if(spelSp1.equals("adv")){
-            spelSp1="40"; //deuce!! : speler 2 neemt voordeel weg van speler 1 (opnieuw Deuce)
-        }else if(spelSp2.equals("40")){
-            gameSp2++;
-            spelSp1="0";
-            spelSp2="0";
+        }else if(currentGamePlayer2.equals("0")){
+            currentGamePlayer2 ="15";
+        }else if(currentGamePlayer2.equals("15")){
+            currentGamePlayer2 ="30";
+        }else if(currentGamePlayer2.equals("30")){
+            currentGamePlayer2 ="40";
+        }else if(currentGamePlayer2.equals("adv")){
+            wonGamePlayer2++;
+            currentGamePlayer1 ="0"; //reset van de spellen
+            currentGamePlayer2 ="0";
+        }else if(currentGamePlayer1.equals("40")){
+            currentGamePlayer2 ="adv"; //deuce!! : punt speler 2
+        }else if(currentGamePlayer1.equals("adv")){
+            currentGamePlayer1 ="40"; //deuce!! : speler 2 neemt voordeel weg van speler 1 (opnieuw Deuce)
+        }else if(currentGamePlayer2.equals("40")){
+            wonGamePlayer2++;
+            currentGamePlayer1 ="0";
+            currentGamePlayer2 ="0";
         }
 
         //winst set
-        if(gameSp1>=6&&gameSp2<=(gameSp1-2)){
-            setSp1++;
-            gameSp1=0;
-            gameSp2=0;
-        }else if(gameSp2>=6&&gameSp1<=(gameSp2-2)){
-            setSp2++;
-            gameSp1=0;
-            gameSp2=0;
+        if(wonGamePlayer1 >=6&& wonGamePlayer2 <=(wonGamePlayer1 -2)){
+            wonSetPlayer1++;
+            wonGamePlayer1 =0;
+            wonGamePlayer2 =0;
+        }else if(wonGamePlayer2 >=6&& wonGamePlayer1 <=(wonGamePlayer2 -2)){
+            wonSetPlayer2++;
+            wonGamePlayer1 =0;
+            wonGamePlayer2 =0;
         }
         updateSetstand();
     }
 
     public void updateSetstand()
     {
-        setStand = setSp1 + "-" + setSp2;
+        setStand = wonSetPlayer1 + "-" + wonSetPlayer2;
     }
 
-    public void eindScore()
+
+
+    public void displayScore()
     {
-        System.out.println("De eindstand is " +setSp1+ "-" +setSp2);
+        System.out.println("De eindstand is " + wonSetPlayer1 + "-" + wonSetPlayer2 +
+                "(" + wonGamePlayer1 + "-" + wonSetPlayer2 + ")" );
     }
 }
 
