@@ -1,126 +1,89 @@
 package org.example;
 
+import java.util.Optional;
+
 public class TennisScorebord {
 
-    private String player1;
-    private String player2;
-    private int wonSetPlayer1;
-    private int wonSetPlayer2;
-    private int wonGamePlayer1;
-    private int wonGamePlayer2;
-    private int tiebreakPlayer1;
-    private int tiebreakPlayer2;
-    private String currentGamePlayer1;
-    private String currentGamePlayer2;
-    private String setStand;
+    private Player player1;
+    private Player player2;
+    private Optional<Player> spelerMetVoordeel;
 
-    /**
-     * Constructor voor objects van class Scorebord
-     */
-    public TennisScorebord(String player1, String player2)
-    {
+    public TennisScorebord(Player player1, Player player2) {
         this.player1 = player1;
         this.player2 = player2;
-        currentGamePlayer1 ="0";
-        currentGamePlayer2 ="0";
-        setStand="0-0";
+        this.spelerMetVoordeel = Optional.empty();
     }
 
-    public void addPoint(String naamSpeler)
-    {
-        //controle op Tiebreak
-        if(wonGamePlayer1 ==6&& wonGamePlayer2 ==6){
-            if(naamSpeler.equals(player1)){
-                if(tiebreakPlayer1 >=6&&(tiebreakPlayer2 <=(tiebreakPlayer1 -2))){   //indien 2 punten verschil
-                    wonSetPlayer1++; //setwinst
-                    currentGamePlayer1 ="0"; //reset van de spellen
-                    currentGamePlayer2 ="0";
-                    wonGamePlayer1 =0;
-                    wonGamePlayer2 =0;
-                    tiebreakPlayer1 =0;
-                    tiebreakPlayer2 =0;
-                }else{
-                    tiebreakPlayer1++;                        //anders TBpunt+1
-                }
-            }else if(tiebreakPlayer2 >=6&&(tiebreakPlayer1 <=(tiebreakPlayer2 -1))){
-                wonSetPlayer2++;    //setwinst
-                currentGamePlayer1 ="0"; //reset van de spellen
-                currentGamePlayer2 ="0";
-                wonGamePlayer1 =0;
-                wonGamePlayer2 =0;
-                tiebreakPlayer1 =0;
-                tiebreakPlayer2 =0;
-            }else{
-                tiebreakPlayer2++;
-            }
 
-            //puntentelling bij spelletje - gebruik van string om "advantage" te verwerken
-            //speler1
-        }else if(naamSpeler.equals(player1)){
-            if(currentGamePlayer1.equals("0")){
-                currentGamePlayer1 ="15";
-            }else if(currentGamePlayer1.equals("15")){
-                currentGamePlayer1 ="30";
-            }else if(currentGamePlayer1.equals("30")){
-                currentGamePlayer1 ="40";
-            }else if(currentGamePlayer1.equals("adv")){
-                wonGamePlayer1++;
-                currentGamePlayer1 ="0"; //reset van de spellen
-                currentGamePlayer2 ="0";
-            }else if(currentGamePlayer2.equals("40")){
-                currentGamePlayer1 ="adv"; //deuce!! : punt speler 1
-            }else if(currentGamePlayer2.equals("adv")){
-                currentGamePlayer2 ="40"; //deuce!! : speler 1 neemt voordeel weg van speler 1 (opnieuw Deuce)
-            }else if(currentGamePlayer1.equals("40")){
-                wonGamePlayer1++;
-                currentGamePlayer1 ="0";
-                currentGamePlayer2 ="0";
-            }
-            //speler2
-        }else if(currentGamePlayer2.equals("0")){
-            currentGamePlayer2 ="15";
-        }else if(currentGamePlayer2.equals("15")){
-            currentGamePlayer2 ="30";
-        }else if(currentGamePlayer2.equals("30")){
-            currentGamePlayer2 ="40";
-        }else if(currentGamePlayer2.equals("adv")){
-            wonGamePlayer2++;
-            currentGamePlayer1 ="0"; //reset van de spellen
-            currentGamePlayer2 ="0";
-        }else if(currentGamePlayer1.equals("40")){
-            currentGamePlayer2 ="adv"; //deuce!! : punt speler 2
-        }else if(currentGamePlayer1.equals("adv")){
-            currentGamePlayer1 ="40"; //deuce!! : speler 2 neemt voordeel weg van speler 1 (opnieuw Deuce)
-        }else if(currentGamePlayer2.equals("40")){
-            wonGamePlayer2++;
-            currentGamePlayer1 ="0";
-            currentGamePlayer2 ="0";
+    public void addPoint(Player player){
+        if (applyAdvantage()){
+            performAdvantageRules(player);
+        } else {
+            player.increaseMatch();
+            performScoreUpdateChecks(player);
+        }
+    }
+
+    private void performScoreUpdateChecks(Player player) {
+        if (checkMatchWin(player)) {
+            player.increaseGame();
+            resetMatchValues();
         }
 
-        //winst set
-        if(wonGamePlayer1 >=6&& wonGamePlayer2 <=(wonGamePlayer1 -2)){
-            wonSetPlayer1++;
-            wonGamePlayer1 =0;
-            wonGamePlayer2 =0;
-        }else if(wonGamePlayer2 >=6&& wonGamePlayer1 <=(wonGamePlayer2 -2)){
-            wonSetPlayer2++;
-            wonGamePlayer1 =0;
-            wonGamePlayer2 =0;
+        if (checkSetWin(player)) {
+            player.increaseSet();
+            resetGameValues();
         }
-        updateSetstand();
     }
 
-    public void updateSetstand()
-    {
-        setStand = wonSetPlayer1 + "-" + wonSetPlayer2;
+    private boolean checkSetWin(Player player) {
+        return player.getGewonnenGame() >= 6 &&
+                (player1.getGewonnenGame() - player2.getGewonnenGame() >= 2 || player2.getGewonnenGame() - player1.getGewonnenGame() >= 2);
     }
 
+    private boolean checkMatchWin(Player player) {
+        return player.getGamePuntenTelling() == 4;
+    }
 
+    private void resetMatchValues(){
+        player1.setGamePuntenTelling(0);
+        player2.setGamePuntenTelling(0);
+    }
 
-    public void displayScore()
-    {
-        System.out.println("De eindstand is " + wonSetPlayer1 + "-" + wonSetPlayer2 +
-                "(" + wonGamePlayer1 + "-" + wonSetPlayer2 + ")" );
+    private void resetGameValues(){
+        player1.setGewonnenGame(0);
+        player2.setGewonnenGame(0);
+    }
+
+    private boolean applyAdvantage(){
+        return player1.getGamePuntenTelling() == 3 && player2.getGamePuntenTelling() == 3;
+    }
+
+    private void performAdvantageRules(Player player){
+        if (spelerMetVoordeel.isEmpty()){
+            spelerMetVoordeel = Optional.ofNullable(player);
+        } else if (checkAdvantagePlayerEquality(player)) {
+            player.increaseMatch();
+            performScoreUpdateChecks(player);
+            removeSpelerMetVoordeel();
+        } else {
+            removeSpelerMetVoordeel();
+        }
+    }
+
+    private boolean checkAdvantagePlayerEquality(Player player){
+        Optional<Player> input = Optional.ofNullable(player);
+        return spelerMetVoordeel.equals(input);
+    }
+
+    private void removeSpelerMetVoordeel(){
+        this.spelerMetVoordeel = Optional.empty();
+    }
+
+    public void returnScore(){
+        System.out.println(player1.getNaam() + " - " + player2.getNaam() + ": " +
+                player1.getGewonnenSet() + "(" + player1.getGewonnenGame() + ") - " +
+                player2.getGewonnenSet() + "(" + player2.getGewonnenGame() + ")");
     }
 }
 
